@@ -2,6 +2,7 @@
 using OutOfOfficeApp.Entities;
 using OutOfOfficeApp.Models;
 using System.Linq.Dynamic.Core;
+using System.Reflection;
 
 namespace OutOfOfficeApp.Services
 {
@@ -16,17 +17,40 @@ namespace OutOfOfficeApp.Services
             dbContext = _dbContext;
             mapper = _mapper;
         }
-        public IEnumerable<ProjectDtoOut> SortProjects(string columnName)
+        public IEnumerable<ProjectDtoOut> GetAllProjects()
         {
-            string query = $"{columnName} == @0";
-            var sortedProjects = dbContext.Projects.OrderBy(query).ToList();
+            {
+                var allProjects = dbContext.Projects.ToList();
+                var projectsDtoOut = mapper.Map<IEnumerable<ProjectDtoOut>>(allProjects);
+                return projectsDtoOut;
+            }
+        }
+        public IEnumerable<ProjectDtoOut> SortProjects(IEnumerable<ProjectDtoOut> projects, string columnName)
+        {
+            string query = $"{columnName}";
+            var sortedProjects = projects.AsQueryable().OrderBy(query).ToList();
             var projectsDtoOut = mapper.Map<IEnumerable<ProjectDtoOut>>(sortedProjects);
             return projectsDtoOut;
         }
-        public IEnumerable<ProjectDtoOut> FilterProjects(string columnName, object value)
+        public IEnumerable<ProjectDtoOut> FilterProjects(IEnumerable<ProjectDtoOut> projects, string columnName, string value)
         {
-            string query = $"{columnName} == @0";
-            var filteredProjects = dbContext.Projects.Where(query, value).ToList();
+            string query = $"{columnName}==@0";
+
+            var column = typeof(Project).GetProperty(columnName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            var columnType = Nullable.GetUnderlyingType(column.PropertyType) ?? column.PropertyType;
+            object convertedValue;
+
+            if (columnType.IsEnum)
+            {
+                convertedValue = Enum.Parse(columnType, value, ignoreCase: true);
+            }
+            else
+            {
+                convertedValue = Convert.ChangeType(value, columnType);
+            }
+
+            var filteredProjects = projects.AsQueryable().Where(query, convertedValue).ToList();
+
             var projectsDtoOut = mapper.Map<IEnumerable<ProjectDtoOut>>(filteredProjects);
             return projectsDtoOut;
         }
@@ -43,15 +67,17 @@ namespace OutOfOfficeApp.Services
 
             return new EditResult<ProjectDtoOut>() { IsSuccess = true, Model = projectDtoOut };
         }
-        public ProjectDtoOut AddNewProject(Project project)
+        public ProjectDtoOut AddNewProject(ProjectDtoIn project)
         {
-            dbContext.Projects.Add(project);
+            var projectMapped = mapper.Map<Project>(project);
+            projectMapped.Status = Enums.Status.Active;
+            dbContext.Projects.Add(projectMapped);
             dbContext.SaveChanges();
 
-            var projectDtoOut = mapper.Map<ProjectDtoOut>(project);
+            var projectDtoOut = mapper.Map<ProjectDtoOut>(projectMapped);
             return projectDtoOut;
         }
-        public EditResult<ProjectDtoOut> EditProject(Project project, int ID)
+        public EditResult<ProjectDtoOut> EditProject(ProjectDtoIn project, int ID)
         {
             var projectToEdit = dbContext.Projects.FirstOrDefault(e => e.ProjectID == ID);
 
@@ -63,10 +89,8 @@ namespace OutOfOfficeApp.Services
             projectToEdit.ProjectType = project.ProjectType;
             projectToEdit.StartDate = project.StartDate;
             projectToEdit.EndDate = project.EndDate;
-            projectToEdit.Status = project.Status;
             projectToEdit.ProjectManager = project.ProjectManager;
             projectToEdit.Comment = project.Comment;
-            projectToEdit.Status = project.Status;
             dbContext.SaveChanges();
 
             var projectDtoOut = mapper.Map<ProjectDtoOut>(projectToEdit);
@@ -90,5 +114,7 @@ namespace OutOfOfficeApp.Services
             return new EditResult<ProjectDtoOut>() { IsSuccess = true, Model = projectDtoOut };
         }
 
+        
+        
     }
 }

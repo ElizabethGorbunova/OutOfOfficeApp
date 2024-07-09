@@ -4,7 +4,8 @@ using AutoMapper;
 using System.Linq.Dynamic.Core;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-
+using System.Reflection;
+using System.Linq;
 
 namespace OutOfOfficeApp.Services
 {
@@ -18,36 +19,68 @@ namespace OutOfOfficeApp.Services
             dbContext = _dbContext;
             mapper = _mapper;
         }
-        public IEnumerable<EmployeeDtoOut> SortEmployees(string columnName)
+        public IEnumerable<EmployeeDtoOut> GetAllEmployees()
         {
-            string query = $"{columnName} == @0";
-            var sortedEmployees = dbContext.Employees.OrderBy(query).ToList();
+            var allEmployees = dbContext.Employees.ToList();
+            var employeesDtoOut = mapper.Map<IEnumerable<EmployeeDtoOut>>(allEmployees);
+            return employeesDtoOut;
+        }
+        public IEnumerable<EmployeeDtoOut> SortEmployees(IEnumerable<EmployeeDtoOut> employees, string columnName)
+        {
+            string query = $"{columnName}";
+            var sortedEmployees = employees.AsQueryable().OrderBy(query).ToList();
             var employeesDtoOut = mapper.Map<IEnumerable<EmployeeDtoOut>>(sortedEmployees);
             return employeesDtoOut;
         }
-
-        public IEnumerable<EmployeeDtoOut> FilterEmployees(string columnName, object value)
+        public IEnumerable<EmployeeDtoOut> FilterEmployees(IEnumerable<EmployeeDtoOut> employees, string columnName, string value)
         {
-            string query = $"{columnName} == @0";
-            var filteredEmployees = dbContext.Employees.Where(query, value).ToList();
+            string query = $"{columnName}==@0";
+
+            var column = typeof(Employee).GetProperty(columnName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            var columnType = Nullable.GetUnderlyingType(column.PropertyType) ?? column.PropertyType;
+            object convertedValue;
+
+            if (columnType.IsEnum)
+            {
+                convertedValue = Enum.Parse(columnType, value, ignoreCase: true);
+            }
+            else
+            {
+                convertedValue = Convert.ChangeType(value, columnType);
+            }
+
+            var filteredEmployees = employees.AsQueryable().Where(query, convertedValue).ToList();
+
             var employeesDtoOut = mapper.Map<IEnumerable<EmployeeDtoOut>>(filteredEmployees);
             return employeesDtoOut;
         }
-
-        public EmployeeDtoOut AddNewEmployee(Employee employee)
+        public EditResult<EmployeeDtoOut> OpenEmployee(int ID)
         {
-            dbContext.Employees.Add(employee);
+            var employeeToOpen = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == ID);
+
+            if (employeeToOpen == null)
+            {
+                return new EditResult<EmployeeDtoOut>() { IsSuccess = false, Model = null };
+            }
+
+            var employeeDtoOut = mapper.Map<EmployeeDtoOut>(employeeToOpen);
+
+            return new EditResult<EmployeeDtoOut>() { IsSuccess = true, Model = employeeDtoOut };
+        }
+        public EmployeeDtoOut AddNewEmployee(EmployeeDtoIn employee)
+        {
+            var employeeMapped = mapper.Map<Employee>(employee);
+            dbContext.Employees.Add(employeeMapped);
             dbContext.SaveChanges();
 
-            var employeeDtoOut = mapper.Map<EmployeeDtoOut>(employee);
+            var employeeDtoOut = mapper.Map<EmployeeDtoOut>(employeeMapped);
             return employeeDtoOut;
         }
-
-        public EditResult<EmployeeDtoOut> EditEmployee(Employee employee, int ID)
+        public EditResult<EmployeeDtoOut> EditEmployee(EmployeeDtoIn employee, int ID)
         {
             var employeeToEdit = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == ID);
 
-            if(employeeToEdit == null)
+            if (employeeToEdit == null)
             {
                 return new EditResult<EmployeeDtoOut>() { IsSuccess = false, Model = null };
             }
@@ -62,40 +95,8 @@ namespace OutOfOfficeApp.Services
             dbContext.SaveChanges();
 
             var employeeDtoOut = mapper.Map<EmployeeDtoOut>(employeeToEdit);
-            return new EditResult<EmployeeDtoOut>() { IsSuccess = true, Model = employeeDtoOut } ;
-        }
-
-        public EditResult<EmployeeDtoOut> DeactivateEmployee (int ID)
-        {
-            var employeeToDeactivate = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == ID);
-
-            if (employeeToDeactivate == null)
-            {
-                return new EditResult<EmployeeDtoOut>() { IsSuccess = false, Model = null };
-            }
-
-            employeeToDeactivate.Status = Enums.Status.Inactive;
-            dbContext.SaveChanges();
-
-            var employeeDtoOut = mapper.Map<EmployeeDtoOut>(employeeToDeactivate);
-
-            return new EditResult<EmployeeDtoOut>() { IsSuccess = true, Model = employeeDtoOut};
-        }
-
-        public EditResult<EmployeeDtoOut> OpenEmployee(int ID)
-        {
-            var employeeToOpen = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == ID);
-
-            if (employeeToOpen == null)
-            {
-                return new EditResult<EmployeeDtoOut>() { IsSuccess = false, Model = null };
-            }
-
-            var employeeDtoOut = mapper.Map<EmployeeDtoOut>(employeeToOpen);
-
             return new EditResult<EmployeeDtoOut>() { IsSuccess = true, Model = employeeDtoOut };
         }
-
         public EditResult<EmployeeDtoOut> AssignEmployeeToProject(int employeeID, int projectID)
         {
             var employee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeID);
@@ -113,13 +114,30 @@ namespace OutOfOfficeApp.Services
             }
 
             employee.Projects.Add(project);
-            dbContext.SaveChanges();
+            
 
             var employeeDtoOut = mapper.Map<EmployeeDtoOut>(employee);
 
             return new EditResult<EmployeeDtoOut>() { IsSuccess = true, Model = employeeDtoOut };
         }
+        public EditResult<EmployeeDtoOut> DeactivateEmployee(int ID)
+        {
+            var employeeToDeactivate = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == ID);
 
+            if (employeeToDeactivate == null)
+            {
+                return new EditResult<EmployeeDtoOut>() { IsSuccess = false, Model = null };
+            }
 
+            employeeToDeactivate.Status = Enums.Status.Inactive;
+            dbContext.SaveChanges();
+
+            var employeeDtoOut = mapper.Map<EmployeeDtoOut>(employeeToDeactivate);
+
+            return new EditResult<EmployeeDtoOut>() { IsSuccess = true, Model = employeeDtoOut };
+        }
+
+       
+        
     }
 }

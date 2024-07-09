@@ -2,6 +2,7 @@
 using OutOfOfficeApp.Entities;
 using OutOfOfficeApp.Models;
 using System.Linq.Dynamic.Core;
+using System.Reflection;
 
 namespace OutOfOfficeApp.Services
 {
@@ -16,19 +17,40 @@ namespace OutOfOfficeApp.Services
             dbContext = _dbContext;
             mapper = _mapper;
         }
-        public IEnumerable<LeaveRequestDtoOut> SortLeaveRequests(string columnName)
+        public IEnumerable<LeaveRequestDtoOut> GetAllLeaveRequests()
         {
-            string query = $"{columnName} == @0";
-            var sortedLeaveRequests = dbContext.LeaveRequests.OrderBy(query).ToList();
-            var leaveRequestsDtoOut = mapper.Map<IEnumerable<LeaveRequestDtoOut>>(sortedLeaveRequests);
-            return leaveRequestsDtoOut;
+            var allRequests = dbContext.LeaveRequests.ToList();
+            var requestsDtoOut = mapper.Map<IEnumerable<LeaveRequestDtoOut>>(allRequests);
+            return requestsDtoOut;
         }
-        public IEnumerable<LeaveRequestDtoOut> FilterLeaveRequests(string columnName, object value)
+        public IEnumerable<LeaveRequestDtoOut> SortLeaveRequests(IEnumerable<LeaveRequestDtoOut> requests, string columnName)
         {
-            string query = $"{columnName} == @0";
-            var filteredLeaveRequests = dbContext.LeaveRequests.Where(query, value).ToList();
-            var leaveRequestsDtoOut = mapper.Map<IEnumerable<LeaveRequestDtoOut>>(filteredLeaveRequests);
-            return leaveRequestsDtoOut;
+            string query = $"{columnName}";
+            var sortedRequests = requests.AsQueryable().OrderBy(query).ToList();
+            var requestsDtoOut = mapper.Map<IEnumerable<LeaveRequestDtoOut>>(sortedRequests);
+            return requestsDtoOut;
+        }
+        public IEnumerable<LeaveRequestDtoOut> FilterLeaveRequests(IEnumerable<LeaveRequestDtoOut> requests, string columnName, string value)
+        {
+            string query = $"{columnName}==@0";
+
+            var column = typeof(LeaveRequest).GetProperty(columnName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            var columnType = Nullable.GetUnderlyingType(column.PropertyType) ?? column.PropertyType;
+            object convertedValue;
+
+            if (columnType.IsEnum)
+            {
+                convertedValue = Enum.Parse(columnType, value, ignoreCase: true);
+            }
+            else
+            {
+                convertedValue = Convert.ChangeType(value, columnType);
+            }
+
+            var filteredRequests = requests.AsQueryable().Where(query, convertedValue).ToList();
+
+            var requestsDtoOut = mapper.Map<IEnumerable<LeaveRequestDtoOut>>(filteredRequests);
+            return requestsDtoOut;
         }
         public EditResult<LeaveRequestDtoOut> OpenLeaveRequest(int ID)
         {
@@ -43,18 +65,22 @@ namespace OutOfOfficeApp.Services
 
             return new EditResult<LeaveRequestDtoOut>() { IsSuccess = true, Model = leaveRequestDtoOut };
         }
-        public EditResult<LeaveRequestDtoOut> CreateLeaveRequest(LeaveRequest newLeaveRequest)
+        public EditResult<LeaveRequestDtoOut> CreateLeaveRequest(LeaveRequestDtoIn newLeaveRequest)
         {
-            newLeaveRequest.Status = Enums.LeaveRequestStatus.New;
-            dbContext.LeaveRequests.Add(newLeaveRequest);
+            var requestMapped = mapper.Map<LeaveRequest>(newLeaveRequest);
+
+            requestMapped.Status = Enums.LeaveRequestStatus.New;
+            dbContext.LeaveRequests.Add(requestMapped);
             dbContext.SaveChanges();
 
-            var leaveRequestDtoOut = mapper.Map<LeaveRequestDtoOut>(newLeaveRequest);
+            var leaveRequestDtoOut = mapper.Map<LeaveRequestDtoOut>(requestMapped);
 
             return new EditResult<LeaveRequestDtoOut>() { IsSuccess = true, Model = leaveRequestDtoOut };
         }
-        public EditResult<LeaveRequestDtoOut> EditLeaveRequest(LeaveRequest leaveRequest, int ID)
+        public EditResult<LeaveRequestDtoOut> EditLeaveRequest(LeaveRequestDtoIn leaveRequest, int ID)
         {
+            var requestMapped = mapper.Map<LeaveRequest>(leaveRequest);
+
             var leaveRequestToEdit = dbContext.LeaveRequests.FirstOrDefault(e => e.LeaveRequestID == ID);
 
             if (leaveRequestToEdit == null)
@@ -62,10 +88,10 @@ namespace OutOfOfficeApp.Services
                 return new EditResult<LeaveRequestDtoOut>() { IsSuccess = false, Model = null };
             }
 
-            leaveRequestToEdit.AbsenceReason = leaveRequest.AbsenceReason;
-            leaveRequestToEdit.StartDate = leaveRequest.StartDate;
-            leaveRequestToEdit.EndDate = leaveRequest.EndDate;
-            leaveRequestToEdit.Comment = leaveRequest.Comment;
+            leaveRequestToEdit.AbsenceReason = requestMapped.AbsenceReason;
+            leaveRequestToEdit.StartDate = requestMapped.StartDate;
+            leaveRequestToEdit.EndDate = requestMapped.EndDate;
+            leaveRequestToEdit.Comment = requestMapped.Comment;
             dbContext.SaveChanges();
 
             var leaveRequestDtoOut = mapper.Map<LeaveRequestDtoOut>(leaveRequestToEdit);
@@ -99,7 +125,7 @@ namespace OutOfOfficeApp.Services
             var leaveRequestDtoOut = mapper.Map<LeaveRequestDtoOut>(leaveRequestToCancel);
             return new EditResult<LeaveRequestDtoOut>() { IsSuccess = true, Model = leaveRequestDtoOut };
         }
-
-
+        
+       
     }
 }
