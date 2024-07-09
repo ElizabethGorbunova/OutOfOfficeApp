@@ -16,7 +16,7 @@ namespace OutOfOfficeApp.Entities
         public int PeoplePartner { get; set; }      //DT Change
         public float OutOfOfficeBalance { get; set; }
         public string? Photo { get; set; }
-        public virtual List<Project>? Projects { get; set; }
+        public virtual List<Project> Projects { get; set; } = new List<Project>();
 
     }
 }
