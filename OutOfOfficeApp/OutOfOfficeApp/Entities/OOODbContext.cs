@@ -5,11 +5,13 @@ namespace OutOfOfficeApp.Entities
 {
     public class OOODbContext: DbContext
     {
-        private string _connectionString = "Server=localhost;Database=OOODbContext;Trusted_Connection=True";
+        private string _connectionString = "rServer=localhost;Database=OOODbContext;Trusted_Connection=True";
         internal DbSet<Employee> Employees { get; set; }
         internal DbSet<LeaveRequest> LeaveRequests { get; set; }
         internal DbSet<ApprovalRequest> ApprovalRequests { get; set; }
         internal DbSet<Project> Projects { get; set; }
+        internal DbSet<User> Users { get; set; }
+        internal DbSet<Role> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,7 +25,6 @@ namespace OutOfOfficeApp.Entities
                 employee.Property(p => p.PeoplePartner).IsRequired();
                 employee.Property(p => p.OutOfOfficeBalance).IsRequired();
             });
-
 
             modelBuilder.Entity<LeaveRequest>(request =>
             {
@@ -50,6 +51,17 @@ namespace OutOfOfficeApp.Entities
                 project.Property(p => p.StartDate).IsRequired();              
                 project.Property(p => p.ProjectManager).IsRequired();
                 project.Property(p => p.Status).IsRequired();
+            });
+
+            modelBuilder.Entity<User>(user =>
+            {
+                user.Property(p => p.RoleId).IsRequired();
+                user.Property(p => p.EmployeeId).IsRequired();
+            });
+
+            modelBuilder.Entity<Role>(role =>
+            {
+                role.Property(p => p.Name).IsRequired();
             });
 
         }

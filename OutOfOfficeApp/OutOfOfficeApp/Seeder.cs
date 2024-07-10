@@ -38,6 +38,11 @@ namespace OutOfOfficeApp
                     dbContext.Projects.AddRange(GetProjects());
                     dbContext.SaveChanges();
                 }
+                if (!dbContext.Roles.Any())
+                {
+                    dbContext.Roles.AddRange(GetRoles());
+                    dbContext.SaveChanges();
+                }
             }
         }
 
@@ -187,6 +192,33 @@ namespace OutOfOfficeApp
             };
 
             return projects;
+        }
+
+        private List<Role> GetRoles()
+        {
+            List<Role> roles = new List<Role>()
+            {
+                new Role()
+                {
+                    Name= "HRManager"
+                },
+
+                new Role()
+                {
+                    Name = "ProjectManager"
+                },
+                new Role()
+                {
+                    Name = "Employee"
+                },
+                new Role()
+                {
+                    Name = "Administrator"
+                },
+
+            };
+
+            return roles;
         }
     }
 }
