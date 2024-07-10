@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutOfOfficeApp.Entities;
 using OutOfOfficeApp.Enums;
@@ -9,7 +10,7 @@ namespace OutOfOfficeApp.Controllers
 {
     [ApiController]
     [Route("api/projects")]
-    /*[Authorize]*/
+    [Authorize]
     public class ProjectController:ControllerBase
     {
         public readonly OOODbContext dbContext;
@@ -22,6 +23,7 @@ namespace OutOfOfficeApp.Controllers
             mapper = _mapper;
         }
 
+        [Authorize(Roles = "HRManager, ProjectManager, Administrator")]
         [HttpGet()]
         public ActionResult<IEnumerable<ProjectDtoOut>> GetSortedOrFilteredProjects([FromQuery(Name = "sortBy")] string? columnNameToSortBy = null, [FromQuery(Name = "filter")] Dictionary<string, string>? filterParams = null)
         {
@@ -55,11 +57,12 @@ namespace OutOfOfficeApp.Controllers
 
 
         }
-        
-        [HttpGet("{id}")]
-        public ActionResult<ProjectDtoOut> OpenProject(int id)
+
+        [Authorize(Roles = "HRManager, ProjectManager, Administrator")]
+        [HttpGet("{projectId}")]
+        public ActionResult<ProjectDtoOut> OpenProject(int projectId)
         {
-            var openedProject = projectService.OpenProject(id);
+            var openedProject = projectService.OpenProject(projectId);
             if (openedProject.IsSuccess == false)
             {
                 return NotFound("Not found:(");
@@ -69,6 +72,7 @@ namespace OutOfOfficeApp.Controllers
 
         }
 
+        [Authorize(Roles = "ProjectManager, Administrator")]
         [HttpPost]
         public ActionResult<EmployeeDtoOut> AddNewProject([FromBody] ProjectDtoIn project)
         {
@@ -77,12 +81,13 @@ namespace OutOfOfficeApp.Controllers
             return Ok(newProject);
         }
 
-        [HttpPut("{id}")]
-        public ActionResult<ProjectDtoOut> UpdateProject(int id, [FromBody] ProjectDtoIn? project = null, [FromQuery(Name = "status")] Status status = Status.Active)
+        [Authorize(Roles = "ProjectManager, Administrator")]
+        [HttpPut("{projectId}")]
+        public ActionResult<ProjectDtoOut> UpdateProject(int projectId, [FromBody] ProjectDtoIn? project = null, [FromQuery(Name = "status")] Status status = Status.Active)
         {
             if (status == Status.Inactive)
             {
-                var projectToDeactivate = projectService.DeactivateProject(id);
+                var projectToDeactivate = projectService.DeactivateProject(projectId);
 
                 if (projectToDeactivate.IsSuccess == false)
                 {
@@ -91,7 +96,7 @@ namespace OutOfOfficeApp.Controllers
                 return Ok(projectToDeactivate.Model);
             }
 
-            var updatedProject = projectService.EditProject(project, id);
+            var updatedProject = projectService.EditProject(project, projectId);
 
             if (updatedProject.IsSuccess == false)
             {

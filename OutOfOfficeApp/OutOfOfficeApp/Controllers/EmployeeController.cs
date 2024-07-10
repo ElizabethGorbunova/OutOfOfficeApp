@@ -11,7 +11,7 @@ namespace OutOfOfficeApp.Controllers
 {
     [ApiController]
     [Route("api/employees")]
-    /*[Authorize]*/
+    [Authorize]
     public class EmployeeController: ControllerBase
     {
         public readonly OOODbContext dbContext;
@@ -24,6 +24,8 @@ namespace OutOfOfficeApp.Controllers
             mapper = _mapper;
         }
 
+
+        [Authorize(Roles = "HRManager, ProjectManager, Administrator")]
         [HttpGet()]
         public ActionResult<IEnumerable<EmployeeDtoOut>> GetSortedOrFilteredEmployees([FromQuery(Name = "sortBy")] string? columnNameToSortBy=null, [FromQuery(Name = "filter")] Dictionary<string, string>? filterParams = null)
         {
@@ -58,10 +60,11 @@ namespace OutOfOfficeApp.Controllers
 
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<EmployeeDtoOut> OpenEmployee(int id)
+        [Authorize(Roles = "ProjectManager, Administrator")]
+        [HttpGet("{employeeId}")]
+        public ActionResult<EmployeeDtoOut> OpenEmployee(int employeeId)
         {
-            var openedEmployee = employeeService.OpenEmployee(id);
+            var openedEmployee = employeeService.OpenEmployee(employeeId);
             if(openedEmployee.IsSuccess == false)
             {
                 return NotFound("Not found:(");
@@ -71,6 +74,7 @@ namespace OutOfOfficeApp.Controllers
 
         }
 
+        [Authorize(Roles = "HRManager, Administrator")]
         [HttpPost]
         public ActionResult<EmployeeDtoOut> AddNewEmployee([FromBody] EmployeeDtoIn employee)
         {
@@ -79,12 +83,21 @@ namespace OutOfOfficeApp.Controllers
             return Ok(newEmployee);
         }
 
-        [HttpPut("{id}")]
-        public ActionResult<EmployeeDtoOut> UpdateEmployee(int id, [FromBody] EmployeeDtoIn? employee = null, [FromQuery(Name = "status")] Status status = Status.Active, [FromQuery(Name = "projectId")] int projectId=0)
+
+        [Authorize(Roles = "HRManager, ProjectManager, Administrator")]
+        [HttpPut("{employeeId}")]
+        public ActionResult<EmployeeDtoOut> UpdateEmployee(int employeeId, [FromBody] EmployeeDtoIn? employee = null, [FromQuery(Name = "status")] Status status = Status.Active, [FromQuery(Name = "projectId")] int projectId=0)
         {
+
             if (status == Status.Inactive)
             {
-                var employeeToDeactivate = employeeService.DeactivateEmployee(id);
+                var localAuthorizationDeactivation = HttpContext.User.IsInRole("HRManager") || HttpContext.User.IsInRole("Administrator");
+                
+                if (!localAuthorizationDeactivation)
+                {
+                    return Forbid();
+                }
+                var employeeToDeactivate = employeeService.DeactivateEmployee(employeeId);
 
                 if (employeeToDeactivate.IsSuccess == false)
                 {
@@ -92,9 +105,15 @@ namespace OutOfOfficeApp.Controllers
                 }
                 return Ok(employeeToDeactivate.Model);
             }
+
             if(projectId != 0)
             {
-                var employeeWithAssignedProject = employeeService.AssignEmployeeToProject(id, projectId);
+                var localAuthorizationAssigning = HttpContext.User.IsInRole("ProjectManager") || HttpContext.User.IsInRole("Administrator");
+                if (!localAuthorizationAssigning)
+                {
+                    return Forbid();
+                }
+                var employeeWithAssignedProject = employeeService.AssignEmployeeToProject(employeeId, projectId);
 
                 if (employeeWithAssignedProject.IsSuccess == false)
                 {
@@ -103,9 +122,16 @@ namespace OutOfOfficeApp.Controllers
 
                 return Ok(employeeWithAssignedProject.Model);
             }
+
             else
             {
-                var updatedEmployee = employeeService.EditEmployee(employee, id);
+                var localAuthorizationEditing = HttpContext.User.IsInRole("HRManager") || HttpContext.User.IsInRole("Administrator");
+                
+                if (!localAuthorizationEditing)
+                {
+                    return Forbid();
+                }
+                var updatedEmployee = employeeService.EditEmployee(employee, employeeId);
 
                 if (updatedEmployee.IsSuccess == false)
                 {
@@ -114,6 +140,10 @@ namespace OutOfOfficeApp.Controllers
 
                 return Ok(updatedEmployee.Model);
             }
+
+            
+
+            
                 
         }
 

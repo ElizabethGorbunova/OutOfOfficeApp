@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutOfOfficeApp.Entities;
 using OutOfOfficeApp.Enums;
@@ -9,7 +10,7 @@ namespace OutOfOfficeApp.Controllers
 {
     [ApiController]
     [Route("api/approvalRequests")]
-    /*[Authorize]*/
+    [Authorize]
     public class ApprovalRequestController:ControllerBase
     {
         
@@ -23,6 +24,7 @@ namespace OutOfOfficeApp.Controllers
             mapper = _mapper;
         }
 
+        [Authorize(Roles = "HRManager, ProjectManager, Administrator")]
         [HttpGet()]
         public ActionResult<IEnumerable<ApprovalRequestDtoOut>> GetSortedOrFilteredApprovalRequests([FromQuery(Name = "sortBy")] string? columnNameToSortBy = null, [FromQuery(Name = "filter")] Dictionary<string, string>? filterParams = null)
         {
@@ -55,10 +57,11 @@ namespace OutOfOfficeApp.Controllers
 
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<ApprovalRequestDtoOut> OpenApprovalRequest(int id)
+        [Authorize(Roles = "HRManager, ProjectManager, Administrator")]
+        [HttpGet("{approvalRequestId}")]
+        public ActionResult<ApprovalRequestDtoOut> OpenApprovalRequest(int approvalRequestId)
         {
-            var openedRequest = approvalService.OpenApprovalRequest(id);
+            var openedRequest = approvalService.OpenApprovalRequest(approvalRequestId);
             if (openedRequest.IsSuccess == false)
             {
                 return NotFound("Not found:(");
@@ -68,12 +71,13 @@ namespace OutOfOfficeApp.Controllers
 
         }
 
-        [HttpPut("{id}")]
-        public ActionResult<ApprovalRequestDtoOut> UpdateApprovalRequest(int id, [FromQuery(Name = "status")] ApprovalRequestStatus status = ApprovalRequestStatus.New)
+        [Authorize(Roles = "HRManager, ProjectManager, Administrator")]
+        [HttpPut("{approvalRequestId}")]
+        public ActionResult<ApprovalRequestDtoOut> UpdateApprovalRequest(int approvalRequestId, [FromQuery(Name = "status")] ApprovalRequestStatus status = ApprovalRequestStatus.New)
         {
             if (status == ApprovalRequestStatus.Approve)
             {
-                var requestToApprove = approvalService.ApproveRequest(id);
+                var requestToApprove = approvalService.ApproveRequest(approvalRequestId);
 
                 if (requestToApprove.IsSuccess == false)
                 {
@@ -84,7 +88,7 @@ namespace OutOfOfficeApp.Controllers
             
             else if(status == ApprovalRequestStatus.Reject)
             {
-                var requestToReject = approvalService.RejectRequest(id);
+                var requestToReject = approvalService.RejectRequest(approvalRequestId);
 
                 if (requestToReject.IsSuccess == false)
                 {

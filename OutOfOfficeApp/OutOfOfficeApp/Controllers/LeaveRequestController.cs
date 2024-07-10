@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutOfOfficeApp.Entities;
 using OutOfOfficeApp.Enums;
 using OutOfOfficeApp.Models;
 using OutOfOfficeApp.Services;
+using System.Security.Claims;
 
 namespace OutOfOfficeApp.Controllers
 {
     [ApiController]
     [Route("api/leaveRequests")]
-    /*[Authorize]*/
+    [Authorize]
     public class LeaveRequestController:ControllerBase
     {
         public readonly OOODbContext dbContext;
@@ -22,10 +24,21 @@ namespace OutOfOfficeApp.Controllers
             mapper = _mapper;
         }
 
+        [Authorize(Roles = "HRManager, ProjectManager, Employee, Administrator")]
         [HttpGet()]
         public ActionResult<IEnumerable<LeaveRequestDtoOut>> GetSortedOrFilteredLeaveRequests([FromQuery(Name = "sortBy")] string? columnNameToSortBy = null, [FromQuery(Name = "filter")] Dictionary<string, string>? filterParams = null)
         {
-            IEnumerable<LeaveRequestDtoOut> sortedFilteredRequests = leaveService.GetAllLeaveRequests();
+            IEnumerable<LeaveRequestDtoOut> sortedFilteredRequests;
+            var employeeRole = HttpContext.User.IsInRole("Employee");
+            if (employeeRole)
+            {
+                int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                sortedFilteredRequests = leaveService.GetAllLeaveRequestsForCurrentEmployee(userId);
+            }
+            else {
+                
+                sortedFilteredRequests = leaveService.GetAllLeaveRequests();
+            };
 
             if (!string.IsNullOrEmpty(columnNameToSortBy))
             {
@@ -53,10 +66,12 @@ namespace OutOfOfficeApp.Controllers
 
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<LeaveRequestDtoOut> OpenLeaveRequest(int id)
+        [Authorize(Roles = "HRManager, ProjectManager, Employee, Administrator")]
+        [HttpGet("{leaveRequestId}")]
+        public ActionResult<LeaveRequestDtoOut> OpenLeaveRequest(int leaveRequestId)
         {
-            var openedRequest = leaveService.OpenLeaveRequest(id);
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var openedRequest = leaveService.OpenLeaveRequest(leaveRequestId, userId);
             if (openedRequest.IsSuccess == false)
             {
                 return NotFound("Not found:(");
@@ -66,20 +81,26 @@ namespace OutOfOfficeApp.Controllers
 
         }
 
+        [Authorize(Roles = "Employee, Administrator")]
         [HttpPost]
         public ActionResult<LeaveRequestDtoOut> AddNewLeaveRequest([FromBody] LeaveRequestDtoIn newRequest)
         {
-            var createdRequest = leaveService.CreateLeaveRequest(newRequest);
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var createdRequest = leaveService.CreateLeaveRequest(newRequest, userId);
 
             return Ok(createdRequest.Model);
         }
 
-        [HttpPut("{id}")]
-        public ActionResult<LeaveRequestDtoOut> UpdateLeaveRequest(int id, [FromQuery(Name = "status")] LeaveRequestStatus status = LeaveRequestStatus.New, [FromBody] LeaveRequestDtoIn? leaveRequest = null)
+        [Authorize(Roles = "Employee, Administrator")]
+        [HttpPut("{leaveRequestId}")]
+        public ActionResult<LeaveRequestDtoOut> UpdateLeaveRequest(int leaveRequestId, [FromQuery(Name = "status")] LeaveRequestStatus status = LeaveRequestStatus.New, [FromBody] LeaveRequestDtoIn? leaveRequest = null)
         {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+           
+
             if (status == LeaveRequestStatus.Submit)
             {
-                var requestToSubmit = leaveService.SubmitLeaveRequest(id);
+                var requestToSubmit = leaveService.SubmitLeaveRequest(leaveRequestId, userId);
 
                 if (requestToSubmit.IsSuccess == false)
                 {
@@ -89,7 +110,7 @@ namespace OutOfOfficeApp.Controllers
             }
             if(status == LeaveRequestStatus.Cancel)
             {
-                var requestToCancel = leaveService.CancelLeaveRequest(id);
+                var requestToCancel = leaveService.CancelLeaveRequest(leaveRequestId, userId);
 
                 if (requestToCancel.IsSuccess == false)
                 {
@@ -98,7 +119,7 @@ namespace OutOfOfficeApp.Controllers
                 return Ok(requestToCancel.Model);
             }
             
-            var updatedEmployee = leaveService.EditLeaveRequest(leaveRequest, id);
+            var updatedEmployee = leaveService.EditLeaveRequest(leaveRequest, leaveRequestId, userId);
 
             if (updatedEmployee.IsSuccess == false)
             {
