@@ -24,26 +24,26 @@ namespace OutOfOfficeApp.Migrations
 
             modelBuilder.Entity("EmployeeProject", b =>
                 {
-                    b.Property<int>("EmployeesEmployeeID")
+                    b.Property<int>("EmployeesEmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProjectsProjectID")
+                    b.Property<int>("ProjectsProjectId")
                         .HasColumnType("int");
 
-                    b.HasKey("EmployeesEmployeeID", "ProjectsProjectID");
+                    b.HasKey("EmployeesEmployeeId", "ProjectsProjectId");
 
-                    b.HasIndex("ProjectsProjectID");
+                    b.HasIndex("ProjectsProjectId");
 
                     b.ToTable("EmployeeProject");
                 });
 
             modelBuilder.Entity("OutOfOfficeApp.Entities.ApprovalRequest", b =>
                 {
-                    b.Property<int>("ApprovalRequestID")
+                    b.Property<int>("ApprovalRequestId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApprovalRequestID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApprovalRequestId"), 1L, 1);
 
                     b.Property<int>("Approver")
                         .HasColumnType("int");
@@ -57,18 +57,18 @@ namespace OutOfOfficeApp.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("ApprovalRequestID");
+                    b.HasKey("ApprovalRequestId");
 
                     b.ToTable("ApprovalRequests");
                 });
 
             modelBuilder.Entity("OutOfOfficeApp.Entities.Employee", b =>
                 {
-                    b.Property<int>("EmployeeID")
+                    b.Property<int>("EmployeeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeId"), 1L, 1);
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -92,18 +92,18 @@ namespace OutOfOfficeApp.Migrations
                     b.Property<int>("Subdivision")
                         .HasColumnType("int");
 
-                    b.HasKey("EmployeeID");
+                    b.HasKey("EmployeeId");
 
                     b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("OutOfOfficeApp.Entities.LeaveRequest", b =>
                 {
-                    b.Property<int>("LeaveRequestID")
+                    b.Property<int>("LeaveRequestId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LeaveRequestID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LeaveRequestId"), 1L, 1);
 
                     b.Property<int>("AbsenceReason")
                         .HasColumnType("int");
@@ -123,18 +123,18 @@ namespace OutOfOfficeApp.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("LeaveRequestID");
+                    b.HasKey("LeaveRequestId");
 
                     b.ToTable("LeaveRequests");
                 });
 
             modelBuilder.Entity("OutOfOfficeApp.Entities.Project", b =>
                 {
-                    b.Property<int>("ProjectID")
+                    b.Property<int>("ProjectId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProjectID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProjectId"), 1L, 1);
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
@@ -154,7 +154,7 @@ namespace OutOfOfficeApp.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("ProjectID");
+                    b.HasKey("ProjectId");
 
                     b.ToTable("Projects");
                 });
@@ -217,13 +217,13 @@ namespace OutOfOfficeApp.Migrations
                 {
                     b.HasOne("OutOfOfficeApp.Entities.Employee", null)
                         .WithMany()
-                        .HasForeignKey("EmployeesEmployeeID")
+                        .HasForeignKey("EmployeesEmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("OutOfOfficeApp.Entities.Project", null)
                         .WithMany()
-                        .HasForeignKey("ProjectsProjectID")
+                        .HasForeignKey("ProjectsProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

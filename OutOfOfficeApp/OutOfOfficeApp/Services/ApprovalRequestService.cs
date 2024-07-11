@@ -54,7 +54,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<ApprovalRequestDtoOut> OpenApprovalRequest(int ID)
         {
-            var approvalRequestToOpen = dbContext.ApprovalRequests.FirstOrDefault(e => e.ApprovalRequestID == ID);
+            var approvalRequestToOpen = dbContext.ApprovalRequests.FirstOrDefault(e => e.ApprovalRequestId == ID);
 
             if (approvalRequestToOpen == null)
             {
@@ -67,7 +67,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<ApprovalRequestDtoOut> ApproveRequest(int ID)
         {
-            var approvalRequestToApprove = dbContext.ApprovalRequests.FirstOrDefault(e => e.ApprovalRequestID == ID);
+            var approvalRequestToApprove = dbContext.ApprovalRequests.FirstOrDefault(e => e.ApprovalRequestId == ID);
 
             if (approvalRequestToApprove == null)
             {
@@ -83,7 +83,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<ApprovalRequestDtoOut> RejectRequest(int ID, string comment = "")
         {
-            var approvalRequestToReject = dbContext.ApprovalRequests.FirstOrDefault(e => e.ApprovalRequestID == ID);
+            var approvalRequestToReject = dbContext.ApprovalRequests.FirstOrDefault(e => e.ApprovalRequestId == ID);
 
             if (approvalRequestToReject == null)
             {

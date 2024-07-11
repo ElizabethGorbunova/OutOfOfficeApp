@@ -10,7 +10,7 @@ using System.Security.Claims;
 namespace OutOfOfficeApp.Controllers
 {
     [ApiController]
-    [Route("api/leaveRequests")]
+    [Route("api/leave-requests")]
     [Authorize]
     public class LeaveRequestController:ControllerBase
     {

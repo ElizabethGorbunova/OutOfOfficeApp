@@ -95,7 +95,7 @@ namespace OutOfOfficeApp
                 new LeaveRequest()
                 {
                     /*LeaveRequestID = 1,*/
-                    Employee = 1,
+                    EmployeeId = 1,
                     AbsenceReason = Enums.AbsenceReason.Health_Issues,
                     StartDate = new DateTime(2024, 07, 18),
                     EndDate = new DateTime(2024, 07, 25),
@@ -106,7 +106,7 @@ namespace OutOfOfficeApp
                 new LeaveRequest()
                 {
                     /*LeaveRequestID = 2,*/
-                    Employee = 2,
+                    EmployeeId = 2,
                     AbsenceReason = Enums.AbsenceReason.Vacation_Leave,
                     StartDate = new DateTime(2024, 08, 01),
                     EndDate = new DateTime(2024, 08, 08),
@@ -117,7 +117,7 @@ namespace OutOfOfficeApp
                 new LeaveRequest()
                 {
                     /*LeaveRequestID = 3,*/
-                    Employee = 3,
+                    EmployeeId = 3,
                     AbsenceReason = Enums.AbsenceReason.ParentalDuties,
                     StartDate = new DateTime(2024, 07, 22),
                     EndDate = new DateTime(2024, 07, 22),

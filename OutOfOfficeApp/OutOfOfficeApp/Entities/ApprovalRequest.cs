@@ -6,14 +6,15 @@ namespace OutOfOfficeApp.Entities
 {
     public class ApprovalRequest
     {
-        public int ApprovalRequestID { get; set; }
+        public int ApprovalRequestId { get; set; }
 
-        [ForeignKey("EmployeeID")]
+        [ForeignKey("Employee")]
         public int Approver { get; set; }
 
-        [ForeignKey("LeaveRequestID")]
+        [ForeignKey("LeaveRequest")]
         public int LeaveRequest { get; set; }
         public string? Comment { get; set; }
+
         public ApprovalRequestStatus Status { get; set; }
     }
 }

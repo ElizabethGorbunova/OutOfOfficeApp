@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="OutOfOfficeApp.Entities.LeaveRequest">
+    <Position X="2.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAAAAAgCAAAAAAIACAAAEAAAAA=</HashCode>
+      <FileName>Entities\LeaveRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OutOfOfficeApp.Entities.ApprovalRequest">
+    <Position X="0.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAECAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\ApprovalRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OutOfOfficeApp.Entities.Employee">
+    <Position X="4.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAIAAAAEAgAAAKAgAAAAAAAAAAAAAAAAAAEAAAAAAQA=</HashCode>
+      <FileName>Entities\Employee.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OutOfOfficeApp.Entities.Project">
+    <Position X="6.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAEAAAAAAAAAAAAAAAkDAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Entities\Project.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OutOfOfficeApp.Entities.Role">
+    <Position X="6.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Role.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OutOfOfficeApp.Entities.User">
+    <Position X="4.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACCAEIAACAAAAAAEAAAAAAAAAAAAAAAAAAAAAACAAg=</HashCode>
+      <FileName>Entities\User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

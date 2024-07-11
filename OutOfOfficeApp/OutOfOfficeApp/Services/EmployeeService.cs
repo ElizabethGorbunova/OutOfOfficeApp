@@ -56,7 +56,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<EmployeeDtoOut> OpenEmployee(int ID)
         {
-            var employeeToOpen = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == ID);
+            var employeeToOpen = dbContext.Employees.FirstOrDefault(e => e.EmployeeId == ID);
 
             if (employeeToOpen == null)
             {
@@ -78,7 +78,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<EmployeeDtoOut> EditEmployee(EmployeeDtoIn employee, int ID)
         {
-            var employeeToEdit = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == ID);
+            var employeeToEdit = dbContext.Employees.FirstOrDefault(e => e.EmployeeId == ID);
 
             if (employeeToEdit == null)
             {
@@ -99,14 +99,14 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<EmployeeDtoOut> AssignEmployeeToProject(int employeeID, int projectID)
         {
-            var employee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeID);
+            var employee = dbContext.Employees.FirstOrDefault(e => e.EmployeeId == employeeID);
 
             if (employee == null)
             {
                 return new EditResult<EmployeeDtoOut>() { IsSuccess = false, Model = null };
             }
 
-            var project = dbContext.Projects.FirstOrDefault(e => e.ProjectID == projectID);
+            var project = dbContext.Projects.FirstOrDefault(e => e.ProjectId == projectID);
 
             if (project == null)
             {
@@ -122,7 +122,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<EmployeeDtoOut> DeactivateEmployee(int ID)
         {
-            var employeeToDeactivate = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == ID);
+            var employeeToDeactivate = dbContext.Employees.FirstOrDefault(e => e.EmployeeId == ID);
 
             if (employeeToDeactivate == null)
             {

@@ -9,7 +9,7 @@ using OutOfOfficeApp.Services;
 namespace OutOfOfficeApp.Controllers
 {
     [ApiController]
-    [Route("api/approvalRequests")]
+    [Route("api/approval-requests")]
     [Authorize]
     public class ApprovalRequestController:ControllerBase
     {
