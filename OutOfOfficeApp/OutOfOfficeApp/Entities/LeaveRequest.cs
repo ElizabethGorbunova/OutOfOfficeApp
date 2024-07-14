@@ -8,7 +8,7 @@ namespace OutOfOfficeApp.Entities
     {
         public int Id { get; set; }
         public virtual Employee? Employee { get; set; }
-        public int EmployeeId { get; set; }
+        public int? EmployeeId { get; set; }
         public AbsenceReason AbsenceReason { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -16,7 +16,7 @@ namespace OutOfOfficeApp.Entities
         public LeaveRequestStatus Status { get; set; }
 
         public virtual ApprovalRequest? ApprovalRequest { get; set; }
-        public int ApprovalRequestId { get; set; }
+        public int? ApprovalRequestId { get; set; }
         
     }
 }

@@ -15,6 +15,12 @@ namespace OutOfOfficeApp
         {
             if (dbContext.Database.CanConnect())
             {
+                if (!dbContext.Roles.Any())
+                {
+                    dbContext.Roles.AddRange(GetRoles());
+                    dbContext.SaveChanges();
+                }
+
                 if (!dbContext.Users.Any())
                 {
                     dbContext.Users.AddRange(GetUsers());
@@ -44,11 +50,7 @@ namespace OutOfOfficeApp
                     dbContext.Projects.AddRange(GetProjects());
                     dbContext.SaveChanges();
                 }
-                if (!dbContext.Roles.Any())
-                {
-                    dbContext.Roles.AddRange(GetRoles());
-                    dbContext.SaveChanges();
-                }
+                
             }
         }
 
@@ -60,22 +62,18 @@ namespace OutOfOfficeApp
                 {
                     FullName= "Person1",
                     OutOfOfficeBalance= 23,
-                   
                     Position = Enums.Position.BackendDeveloper,
                     Status = Enums.Status.Active,
                     Subdivision= Enums.Subdivision.ITDepartment,
-                    /*UserId= 5*/
                 },
 
                 new Employee()
                 {
                     FullName= "Person2",
                     OutOfOfficeBalance= 27,
-                   /* PeoplePartnerId = 1,*/
                     Position = Enums.Position.ProjectManager,
                     Status = Enums.Status.Active,
                     Subdivision= Enums.Subdivision.ITDepartment,
-                    /*UserId= 4*/
 
                 },
 
@@ -83,22 +81,18 @@ namespace OutOfOfficeApp
                 {
                     FullName= "Person3",
                     OutOfOfficeBalance= 37,
-                   /* PeoplePartnerId = 2,*/
                     Position = Enums.Position.HRManager,
                     Status = Enums.Status.Active,
                     Subdivision= Enums.Subdivision.HRDepartment,
-                    /*UserId= 3*/
                 },
 
                 new Employee()
                 {
                     FullName= "Person4",
                     OutOfOfficeBalance= 40,
-                    /*PeoplePartnerId = 2,*/
                     Position = Enums.Position.Administrator,
                     Status = Enums.Status.Active,
                     Subdivision= Enums.Subdivision.ITDepartment,
-                    /*UserId= 6*/
                 }
 
             };
@@ -112,8 +106,7 @@ namespace OutOfOfficeApp
             {
                 new LeaveRequest()
                 {
-                    /*LeaveRequestID = 1,*/
-                    EmployeeId = 2,
+                    EmployeeId = null,
                     AbsenceReason = Enums.AbsenceReason.Health_Issues,
                     StartDate = new DateTime(2024, 07, 18),
                     EndDate = new DateTime(2024, 07, 25),
@@ -123,8 +116,7 @@ namespace OutOfOfficeApp
 
                 new LeaveRequest()
                 {
-                    /*LeaveRequestID = 2,*/
-                    EmployeeId = 2,
+                    EmployeeId = null,
                     AbsenceReason = Enums.AbsenceReason.Vacation_Leave,
                     StartDate = new DateTime(2024, 08, 01),
                     EndDate = new DateTime(2024, 08, 08),
@@ -134,8 +126,7 @@ namespace OutOfOfficeApp
 
                 new LeaveRequest()
                 {
-                    /*LeaveRequestID = 3,*/
-                    EmployeeId = 2,
+                    EmployeeId = null,
                     AbsenceReason = Enums.AbsenceReason.ParentalDuties,
                     StartDate = new DateTime(2024, 07, 22),
                     EndDate = new DateTime(2024, 07, 22),
@@ -154,27 +145,24 @@ namespace OutOfOfficeApp
             {
                 new ApprovalRequest()
                 {
-                    /*ApprovalRequestID = 1,*/
-                    ApproverId = 2,
-                    LeaveRequestId = 2,
-                    Comment = "The request is approved"
+                    ApproverId = null,
+                    LeaveRequestId = null,
+                    Comment = "The request is in progress"
                    
                 },
 
                 new ApprovalRequest()
                 {
-                    /*ApprovalRequestID = 2,*/
-                    ApproverId = 2,
-                    LeaveRequestId = 3,
-                    Comment = "The request is approved"
+                    ApproverId = null,
+                    LeaveRequestId = null,
+                    Comment = "The request is in progress"
                 },
 
                 new ApprovalRequest()
                 {
-                    /*ApprovalRequestID = 3,*/
-                    ApproverId = 2,
-                    LeaveRequestId = 4,
-                    Comment = "The request is approved"
+                    ApproverId = null,
+                    LeaveRequestId = null,
+                    Comment = "The request is in progress"
                 }
 
             };
@@ -188,8 +176,7 @@ namespace OutOfOfficeApp
             {
                 new Project()
                 {
-                    /*ProjectID = 1,*/
-                    ProjectManager = 2,
+                    ProjectManager = null,
                     ProjectType = Enums.ProjectType.OutOfOfficeApplication,
                     StartDate = new DateTime(2024, 01, 15),
                     Comment = "In progress",
@@ -198,8 +185,7 @@ namespace OutOfOfficeApp
 
                 new Project()
                 {
-                    /*ProjectID = 2,*/
-                    ProjectManager = 2,
+                    ProjectManager = null,
                     ProjectType = Enums.ProjectType.OCRInvoiceDataStruktureProject,
                     StartDate = new DateTime(2023, 05, 02),
                     EndDate = new DateTime(2023, 11, 19),
@@ -246,23 +232,23 @@ namespace OutOfOfficeApp
                 new User()
                 {
                     FirstName= "Person1",
-                    RoleId= 3
+                    RoleId= null
                 },
 
                 new User()
                 {
                     FirstName= "Person2",
-                    RoleId= 2
+                    RoleId= null
                 },
                 new User()
                 {
                     FirstName = "Person3",
-                    RoleId =1
+                    RoleId =null
                 },
                 new User()
                 {
                     FirstName = "Person4",
-                    RoleId = 4
+                    RoleId = null
                 },
 
             };

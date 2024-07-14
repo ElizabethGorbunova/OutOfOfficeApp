@@ -13,7 +13,7 @@ namespace OutOfOfficeApp.Entities
 
         [ForeignKey("EmployeeId")]
         public virtual Employee? Employee { get; set; }
-        public int ProjectManager { get; set; }
+        public int? ProjectManager { get; set; }
         public string? Comment { get; set; }
         public Status Status { get; set; }
         public virtual List<EmployeeProject> EmployeeProjects { get; set; }
