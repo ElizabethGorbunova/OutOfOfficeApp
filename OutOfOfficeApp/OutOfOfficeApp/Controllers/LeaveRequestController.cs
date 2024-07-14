@@ -87,6 +87,10 @@ namespace OutOfOfficeApp.Controllers
         {
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var createdRequest = leaveService.CreateLeaveRequest(newRequest, userId);
+            if(createdRequest.IsSuccess == false)
+            {
+                return NotFound($"Employee for user {userId} should be created to perform this action");
+            }
 
             return Ok(createdRequest.Model);
         }

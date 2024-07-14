@@ -87,10 +87,25 @@ namespace OutOfOfficeApp.Services
             var requestMapped = mapper.Map<LeaveRequest>(newLeaveRequest);
             var user = dbContext.Users.FirstOrDefault(u => u.Id == userId);
             var employeeId = user.EmployeeId;
+            if(employeeId == 0)
+            {
+                return new EditResult<LeaveRequestDtoOut>() { IsSuccess = false};
+            }
 
             requestMapped.EmployeeId = employeeId;
             requestMapped.Status = Enums.LeaveRequestStatus.New;
             dbContext.LeaveRequests.Add(requestMapped);
+            dbContext.SaveChanges();
+
+            var leaveRequestId = requestMapped.Id;
+            var newApprovalRequest = new ApprovalRequest()
+            {
+                ApproverId= null,
+                LeaveRequestId = leaveRequestId,
+                Comment = "In progress",
+                Status = Enums.ApprovalRequestStatus.New
+            };
+            dbContext.ApprovalRequests.Add(newApprovalRequest);
             dbContext.SaveChanges();
 
             var leaveRequestDtoOut = mapper.Map<LeaveRequestDtoOut>(requestMapped);
