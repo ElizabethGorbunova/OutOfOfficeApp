@@ -6,14 +6,17 @@ namespace OutOfOfficeApp.Entities
 {
     public class LeaveRequest
     {
-        public int LeaveRequestID { get; set; }
-
-        [ForeignKey("EmployeeID")]
-        public int Employee { get; set; }
+        public int Id { get; set; }
+        public virtual Employee? Employee { get; set; }
+        public int EmployeeId { get; set; }
         public AbsenceReason AbsenceReason { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string? Comment { get; set; }
         public LeaveRequestStatus Status { get; set; }
+
+        public virtual ApprovalRequest? ApprovalRequest { get; set; }
+        public int ApprovalRequestId { get; set; }
+        
     }
 }
