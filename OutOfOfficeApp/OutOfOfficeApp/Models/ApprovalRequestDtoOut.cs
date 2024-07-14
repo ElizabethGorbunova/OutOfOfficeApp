@@ -6,7 +6,7 @@ namespace OutOfOfficeApp.Models
     public class ApprovalRequestDtoOut
     {
 
-        public int ApprovalRequestID { get; set; }
+        public int Id { get; set; }
         public int Approver { get; set; }
         public int LeaveRequest { get; set; }
         public string? Comment { get; set; }

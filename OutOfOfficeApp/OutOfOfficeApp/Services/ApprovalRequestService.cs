@@ -54,7 +54,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<ApprovalRequestDtoOut> OpenApprovalRequest(int ID)
         {
-            var approvalRequestToOpen = dbContext.ApprovalRequests.FirstOrDefault(e => e.ApprovalRequestID == ID);
+            var approvalRequestToOpen = dbContext.ApprovalRequests.FirstOrDefault(e => e.Id == ID);
 
             if (approvalRequestToOpen == null)
             {
@@ -67,7 +67,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<ApprovalRequestDtoOut> ApproveRequest(int ID)
         {
-            var approvalRequestToApprove = dbContext.ApprovalRequests.FirstOrDefault(e => e.ApprovalRequestID == ID);
+            var approvalRequestToApprove = dbContext.ApprovalRequests.FirstOrDefault(e => e.Id == ID);
 
             if (approvalRequestToApprove == null)
             {
@@ -75,6 +75,7 @@ namespace OutOfOfficeApp.Services
             }
 
             approvalRequestToApprove.Status = Enums.ApprovalRequestStatus.Approve;
+            approvalRequestToApprove.Comment = "The request is approved";
             dbContext.SaveChanges();
 
             var approvalRequestDtoOut = mapper.Map<ApprovalRequestDtoOut>(approvalRequestToApprove);
@@ -83,7 +84,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<ApprovalRequestDtoOut> RejectRequest(int ID, string comment = "")
         {
-            var approvalRequestToReject = dbContext.ApprovalRequests.FirstOrDefault(e => e.ApprovalRequestID == ID);
+            var approvalRequestToReject = dbContext.ApprovalRequests.FirstOrDefault(e => e.Id == ID);
 
             if (approvalRequestToReject == null)
             {
@@ -91,6 +92,7 @@ namespace OutOfOfficeApp.Services
             }
 
             approvalRequestToReject.Status = Enums.ApprovalRequestStatus.Reject;
+            approvalRequestToReject.Comment = "The request is rejected";
             if (comment != "")
             {
                 approvalRequestToReject.Comment = comment;

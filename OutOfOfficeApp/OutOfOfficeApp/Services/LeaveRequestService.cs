@@ -28,7 +28,7 @@ namespace OutOfOfficeApp.Services
         {
             var user = dbContext.Users.FirstOrDefault(u => u.Id== userId);
             var employeeId = user.EmployeeId;
-            var requestsOfCurrentEmployee = dbContext.LeaveRequests.Where(x => x.Employee == employeeId).ToList();
+            var requestsOfCurrentEmployee = dbContext.LeaveRequests.Where(x => x.EmployeeId == employeeId).ToList();
             var requestsDtoOut = mapper.Map<IEnumerable<LeaveRequestDtoOut>>(requestsOfCurrentEmployee);
 
             return requestsDtoOut;
@@ -67,13 +67,13 @@ namespace OutOfOfficeApp.Services
             var user = dbContext.Users.FirstOrDefault(u => u.Id == userId);
             var employeeId = user.EmployeeId;
 
-            var leaveRequestToOpen = dbContext.LeaveRequests.FirstOrDefault(e => e.LeaveRequestID == leaveRequestId);
+            var leaveRequestToOpen = dbContext.LeaveRequests.FirstOrDefault(e => e.Id == leaveRequestId);
 
             if (leaveRequestToOpen == null)
             {
                 return new EditResult<LeaveRequestDtoOut>() { IsSuccess = false, Model = null };
             }
-            if (!(leaveRequestToOpen.Employee == employeeId))
+            if (!(leaveRequestToOpen.EmployeeId == employeeId))
             {
                 return new EditResult<LeaveRequestDtoOut>() { IsSuccess = false, Model = null };
             }
@@ -88,7 +88,7 @@ namespace OutOfOfficeApp.Services
             var user = dbContext.Users.FirstOrDefault(u => u.Id == userId);
             var employeeId = user.EmployeeId;
 
-            requestMapped.Employee = employeeId;
+            requestMapped.EmployeeId = employeeId;
             requestMapped.Status = Enums.LeaveRequestStatus.New;
             dbContext.LeaveRequests.Add(requestMapped);
             dbContext.SaveChanges();
@@ -104,13 +104,13 @@ namespace OutOfOfficeApp.Services
             var user = dbContext.Users.FirstOrDefault(u => u.Id == userId);
             var employeeId = user.EmployeeId;
 
-            var leaveRequestToEdit = dbContext.LeaveRequests.FirstOrDefault(e => e.LeaveRequestID == leaveRequestId);
+            var leaveRequestToEdit = dbContext.LeaveRequests.FirstOrDefault(e => e.Id == leaveRequestId);
 
             if (leaveRequestToEdit == null)
             {
                 return new EditResult<LeaveRequestDtoOut>() { IsSuccess = false, Model = null };
             }
-            if (!(leaveRequestToEdit.Employee == employeeId))
+            if (!(leaveRequestToEdit.EmployeeId == employeeId))
             {
                 return new EditResult<LeaveRequestDtoOut>() { IsSuccess = false, Model = null };
             }
@@ -129,13 +129,13 @@ namespace OutOfOfficeApp.Services
             var user = dbContext.Users.FirstOrDefault(u => u.Id == userId);
             var employeeId = user.EmployeeId;
 
-            var leaveRequestToSubmit = dbContext.LeaveRequests.FirstOrDefault(e => e.LeaveRequestID == leaveRequestId);
+            var leaveRequestToSubmit = dbContext.LeaveRequests.FirstOrDefault(e => e.Id == leaveRequestId);
 
             if (leaveRequestToSubmit == null)
             {
                 return new EditResult<LeaveRequestDtoOut>() { IsSuccess = false, Model = null };
             }
-            if (!(leaveRequestToSubmit.Employee == employeeId))
+            if (!(leaveRequestToSubmit.EmployeeId == employeeId))
             {
                 return new EditResult<LeaveRequestDtoOut>() { IsSuccess = false, Model = null };
             }
@@ -150,13 +150,13 @@ namespace OutOfOfficeApp.Services
             var user = dbContext.Users.FirstOrDefault(u => u.Id == userId);
             var employeeId = user.EmployeeId;
 
-            var leaveRequestToCancel = dbContext.LeaveRequests.FirstOrDefault(e => e.LeaveRequestID == leaveRequestId);
+            var leaveRequestToCancel = dbContext.LeaveRequests.FirstOrDefault(e => e.Id == leaveRequestId);
 
             if (leaveRequestToCancel == null)
             {
                 return new EditResult<LeaveRequestDtoOut>() { IsSuccess = false, Model = null };
             }
-            if (!(leaveRequestToCancel.Employee == employeeId))
+            if (!(leaveRequestToCancel.EmployeeId == employeeId))
             {
                 return new EditResult<LeaveRequestDtoOut>() { IsSuccess = false, Model = null };
             }

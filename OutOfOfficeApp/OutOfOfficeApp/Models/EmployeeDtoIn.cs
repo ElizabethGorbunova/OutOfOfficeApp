@@ -8,8 +8,9 @@ namespace OutOfOfficeApp.Models
         public Subdivision Subdivision { get; set; }
         public Position Position { get; set; }
         public Status Status { get; set; }
-        public int PeoplePartner { get; set; }
+        public int PeoplePartnerId { get; set; }
         public float OutOfOfficeBalance { get; set; }
         public string? Photo { get; set; }
+        public int UserId { get; set; }
     }
 }

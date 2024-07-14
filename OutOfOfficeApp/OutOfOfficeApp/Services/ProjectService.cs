@@ -56,7 +56,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<ProjectDtoOut> OpenProject(int ID)
         {
-            var projectToOpen = dbContext.Projects.FirstOrDefault(e => e.ProjectID == ID);
+            var projectToOpen = dbContext.Projects.FirstOrDefault(e => e.Id == ID);
 
             if (projectToOpen == null)
             {
@@ -79,7 +79,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<ProjectDtoOut> EditProject(ProjectDtoIn project, int ID)
         {
-            var projectToEdit = dbContext.Projects.FirstOrDefault(e => e.ProjectID == ID);
+            var projectToEdit = dbContext.Projects.FirstOrDefault(e => e.Id == ID);
 
             if (projectToEdit == null)
             {
@@ -99,7 +99,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<ProjectDtoOut> DeactivateProject(int ID)
         {
-            var projectToDeactivate = dbContext.Projects.FirstOrDefault(e => e.ProjectID == ID);
+            var projectToDeactivate = dbContext.Projects.FirstOrDefault(e => e.Id == ID);
 
             if (projectToDeactivate == null)
             {

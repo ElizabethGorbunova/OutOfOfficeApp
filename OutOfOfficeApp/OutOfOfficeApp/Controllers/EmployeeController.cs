@@ -5,6 +5,7 @@ using OutOfOfficeApp.Entities;
 using OutOfOfficeApp.Enums;
 using OutOfOfficeApp.Models;
 using OutOfOfficeApp.Services;
+using System.Security.Claims;
 using System.Xml.Linq;
 
 namespace OutOfOfficeApp.Controllers

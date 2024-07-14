@@ -56,7 +56,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<EmployeeDtoOut> OpenEmployee(int ID)
         {
-            var employeeToOpen = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == ID);
+            var employeeToOpen = dbContext.Employees.FirstOrDefault(e => e.Id == ID);
 
             if (employeeToOpen == null)
             {
@@ -73,12 +73,16 @@ namespace OutOfOfficeApp.Services
             dbContext.Employees.Add(employeeMapped);
             dbContext.SaveChanges();
 
+            var user = dbContext.Users.FirstOrDefault(u => u.Id == employeeMapped.UserId);
+            user.EmployeeId = employeeMapped.Id;
+            dbContext.SaveChanges();
+
             var employeeDtoOut = mapper.Map<EmployeeDtoOut>(employeeMapped);
             return employeeDtoOut;
         }
         public EditResult<EmployeeDtoOut> EditEmployee(EmployeeDtoIn employee, int ID)
         {
-            var employeeToEdit = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == ID);
+            var employeeToEdit = dbContext.Employees.FirstOrDefault(e => e.Id == ID);
 
             if (employeeToEdit == null)
             {
@@ -89,9 +93,10 @@ namespace OutOfOfficeApp.Services
             employeeToEdit.Subdivision = employee.Subdivision;
             employeeToEdit.Position = employee.Position;
             employeeToEdit.Status = employee.Status;
-            employeeToEdit.PeoplePartner = employee.PeoplePartner;
+            employeeToEdit.PeoplePartnerId = employee.PeoplePartnerId;
             employeeToEdit.OutOfOfficeBalance = employee.OutOfOfficeBalance;
             employeeToEdit.Photo = employee.Photo;
+            employeeToEdit.UserId = employee.UserId;
             dbContext.SaveChanges();
 
             var employeeDtoOut = mapper.Map<EmployeeDtoOut>(employeeToEdit);
@@ -99,14 +104,14 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<EmployeeDtoOut> AssignEmployeeToProject(int employeeID, int projectID)
         {
-            var employee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeID);
+            var employee = dbContext.Employees.FirstOrDefault(e => e.Id == employeeID);
 
             if (employee == null)
             {
                 return new EditResult<EmployeeDtoOut>() { IsSuccess = false, Model = null };
             }
 
-            var project = dbContext.Projects.FirstOrDefault(e => e.ProjectID == projectID);
+            var project = dbContext.Projects.FirstOrDefault(e => e.Id == projectID);
 
             if (project == null)
             {
@@ -122,7 +127,7 @@ namespace OutOfOfficeApp.Services
         }
         public EditResult<EmployeeDtoOut> DeactivateEmployee(int ID)
         {
-            var employeeToDeactivate = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == ID);
+            var employeeToDeactivate = dbContext.Employees.FirstOrDefault(e => e.Id == ID);
 
             if (employeeToDeactivate == null)
             {

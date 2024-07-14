@@ -5,7 +5,7 @@ namespace OutOfOfficeApp.Models
 {
     public class ProjectDtoOut
     {
-        public int ProjectID { get; set; }
+        public int Id { get; set; }
         public ProjectType ProjectType { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

@@ -15,11 +15,22 @@ namespace OutOfOfficeApp
         {
             if (dbContext.Database.CanConnect())
             {
+                if (!dbContext.Users.Any())
+                {
+                    dbContext.Users.AddRange(GetUsers());
+                    dbContext.SaveChanges();
+                }
                 if (!dbContext.Employees.Any())
                 {
                     dbContext.Employees.AddRange(GetEmployees());
                     dbContext.SaveChanges();
                 }
+                if (!dbContext.LeaveRequests.Any())
+                {
+                    dbContext.LeaveRequests.AddRange(GetLeaveRequests());
+                    dbContext.SaveChanges();
+                }
+
 
                 if (!dbContext.ApprovalRequests.Any())
                 {
@@ -27,12 +38,7 @@ namespace OutOfOfficeApp
                     dbContext.SaveChanges();
                 }
 
-                if (!dbContext.LeaveRequests.Any())
-                {
-                    dbContext.LeaveRequests.AddRange(GetLeaveRequests());
-                    dbContext.SaveChanges();
-                }
-
+                
                 if (!dbContext.Projects.Any())
                 {
                     dbContext.Projects.AddRange(GetProjects());
@@ -52,35 +58,47 @@ namespace OutOfOfficeApp
             {
                 new Employee()
                 {
-                    /*EmployeeID = 1,*/
                     FullName= "Person1",
                     OutOfOfficeBalance= 23,
-                    PeoplePartner = 2,
+                   
                     Position = Enums.Position.BackendDeveloper,
                     Status = Enums.Status.Active,
-                    Subdivision= Enums.Subdivision.ITDepartment
+                    Subdivision= Enums.Subdivision.ITDepartment,
+                    /*UserId= 5*/
                 },
 
                 new Employee()
                 {
-                    /*EmployeeID = 2,*/
                     FullName= "Person2",
                     OutOfOfficeBalance= 27,
-                    PeoplePartner = 1,
+                   /* PeoplePartnerId = 1,*/
                     Position = Enums.Position.ProjectManager,
                     Status = Enums.Status.Active,
-                    Subdivision= Enums.Subdivision.ITDepartment
+                    Subdivision= Enums.Subdivision.ITDepartment,
+                    /*UserId= 4*/
+
                 },
 
                 new Employee()
                 {
-                    /*EmployeeID = 3,*/
                     FullName= "Person3",
                     OutOfOfficeBalance= 37,
-                    PeoplePartner = 2,
+                   /* PeoplePartnerId = 2,*/
                     Position = Enums.Position.HRManager,
                     Status = Enums.Status.Active,
-                    Subdivision= Enums.Subdivision.HRDepartment
+                    Subdivision= Enums.Subdivision.HRDepartment,
+                    /*UserId= 3*/
+                },
+
+                new Employee()
+                {
+                    FullName= "Person4",
+                    OutOfOfficeBalance= 40,
+                    /*PeoplePartnerId = 2,*/
+                    Position = Enums.Position.Administrator,
+                    Status = Enums.Status.Active,
+                    Subdivision= Enums.Subdivision.ITDepartment,
+                    /*UserId= 6*/
                 }
 
             };
@@ -95,7 +113,7 @@ namespace OutOfOfficeApp
                 new LeaveRequest()
                 {
                     /*LeaveRequestID = 1,*/
-                    Employee = 1,
+                    EmployeeId = 2,
                     AbsenceReason = Enums.AbsenceReason.Health_Issues,
                     StartDate = new DateTime(2024, 07, 18),
                     EndDate = new DateTime(2024, 07, 25),
@@ -106,7 +124,7 @@ namespace OutOfOfficeApp
                 new LeaveRequest()
                 {
                     /*LeaveRequestID = 2,*/
-                    Employee = 2,
+                    EmployeeId = 2,
                     AbsenceReason = Enums.AbsenceReason.Vacation_Leave,
                     StartDate = new DateTime(2024, 08, 01),
                     EndDate = new DateTime(2024, 08, 08),
@@ -117,7 +135,7 @@ namespace OutOfOfficeApp
                 new LeaveRequest()
                 {
                     /*LeaveRequestID = 3,*/
-                    Employee = 3,
+                    EmployeeId = 2,
                     AbsenceReason = Enums.AbsenceReason.ParentalDuties,
                     StartDate = new DateTime(2024, 07, 22),
                     EndDate = new DateTime(2024, 07, 22),
@@ -137,8 +155,8 @@ namespace OutOfOfficeApp
                 new ApprovalRequest()
                 {
                     /*ApprovalRequestID = 1,*/
-                    Approver = 2,
-                    LeaveRequest = 1,
+                    ApproverId = 2,
+                    LeaveRequestId = 2,
                     Comment = "The request is approved"
                    
                 },
@@ -146,16 +164,16 @@ namespace OutOfOfficeApp
                 new ApprovalRequest()
                 {
                     /*ApprovalRequestID = 2,*/
-                    Approver = 3,
-                    LeaveRequest = 2,
+                    ApproverId = 2,
+                    LeaveRequestId = 3,
                     Comment = "The request is approved"
                 },
 
                 new ApprovalRequest()
                 {
                     /*ApprovalRequestID = 3,*/
-                    Approver = 3,
-                    LeaveRequest = 3,
+                    ApproverId = 2,
+                    LeaveRequestId = 4,
                     Comment = "The request is approved"
                 }
 
@@ -219,6 +237,37 @@ namespace OutOfOfficeApp
             };
 
             return roles;
+        }
+
+        private List<User> GetUsers()
+        {
+            List<User> users = new List<User>()
+            {
+                new User()
+                {
+                    FirstName= "Person1",
+                    RoleId= 3
+                },
+
+                new User()
+                {
+                    FirstName= "Person2",
+                    RoleId= 2
+                },
+                new User()
+                {
+                    FirstName = "Person3",
+                    RoleId =1
+                },
+                new User()
+                {
+                    FirstName = "Person4",
+                    RoleId = 4
+                },
+
+            };
+
+            return users;
         }
     }
 }

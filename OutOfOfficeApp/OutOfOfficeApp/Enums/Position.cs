@@ -4,6 +4,7 @@
     {
         BackendDeveloper, 
         HRManager, 
-        ProjectManager
+        ProjectManager,
+        Administrator
     }
 }
