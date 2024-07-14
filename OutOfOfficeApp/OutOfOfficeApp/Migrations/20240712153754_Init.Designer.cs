@@ -12,8 +12,8 @@ using OutOfOfficeApp.Entities;
 namespace OutOfOfficeApp.Migrations
 {
     [DbContext(typeof(OOODbContext))]
-    [Migration("20240710170653_EmployeeId foreign key added to User table")]
-    partial class EmployeeIdforeignkeyaddedtoUsertable
+    [Migration("20240712153754_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,53 +24,43 @@ namespace OutOfOfficeApp.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("EmployeeProject", b =>
-                {
-                    b.Property<int>("EmployeesEmployeeID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjectsProjectID")
-                        .HasColumnType("int");
-
-                    b.HasKey("EmployeesEmployeeID", "ProjectsProjectID");
-
-                    b.HasIndex("ProjectsProjectID");
-
-                    b.ToTable("EmployeeProject");
-                });
-
             modelBuilder.Entity("OutOfOfficeApp.Entities.ApprovalRequest", b =>
                 {
-                    b.Property<int>("ApprovalRequestID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApprovalRequestID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("Approver")
+                    b.Property<int>("ApproverId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LeaveRequest")
+                    b.Property<int>("LeaveRequestId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("ApprovalRequestID");
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApproverId");
+
+                    b.HasIndex("LeaveRequestId")
+                        .IsUnique();
 
                     b.ToTable("ApprovalRequests");
                 });
 
             modelBuilder.Entity("OutOfOfficeApp.Entities.Employee", b =>
                 {
-                    b.Property<int>("EmployeeID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -79,7 +69,7 @@ namespace OutOfOfficeApp.Migrations
                     b.Property<float>("OutOfOfficeBalance")
                         .HasColumnType("real");
 
-                    b.Property<int>("PeoplePartner")
+                    b.Property<int>("PeoplePartnerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Photo")
@@ -94,26 +84,55 @@ namespace OutOfOfficeApp.Migrations
                     b.Property<int>("Subdivision")
                         .HasColumnType("int");
 
-                    b.HasKey("EmployeeID");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PeoplePartnerId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Employees");
                 });
 
+            modelBuilder.Entity("OutOfOfficeApp.Entities.EmployeeProject", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProjectId", "EmployeeId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("EmployeeProject");
+                });
+
             modelBuilder.Entity("OutOfOfficeApp.Entities.LeaveRequest", b =>
                 {
-                    b.Property<int>("LeaveRequestID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LeaveRequestID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("AbsenceReason")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ApprovalRequestId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Employee")
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmployeeId1")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
@@ -125,21 +144,28 @@ namespace OutOfOfficeApp.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("LeaveRequestID");
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("EmployeeId1");
 
                     b.ToTable("LeaveRequests");
                 });
 
             modelBuilder.Entity("OutOfOfficeApp.Entities.Project", b =>
                 {
-                    b.Property<int>("ProjectID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProjectID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -156,7 +182,9 @@ namespace OutOfOfficeApp.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("ProjectID");
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Projects");
                 });
@@ -187,22 +215,18 @@ namespace OutOfOfficeApp.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RoleId")
@@ -215,19 +239,85 @@ namespace OutOfOfficeApp.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("EmployeeProject", b =>
+            modelBuilder.Entity("OutOfOfficeApp.Entities.ApprovalRequest", b =>
                 {
-                    b.HasOne("OutOfOfficeApp.Entities.Employee", null)
-                        .WithMany()
-                        .HasForeignKey("EmployeesEmployeeID")
+                    b.HasOne("OutOfOfficeApp.Entities.Employee", "Approver")
+                        .WithMany("ApprovalRequests")
+                        .HasForeignKey("ApproverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OutOfOfficeApp.Entities.Project", null)
+                    b.HasOne("OutOfOfficeApp.Entities.LeaveRequest", "LeaveRequest")
+                        .WithOne("ApprovalRequest")
+                        .HasForeignKey("OutOfOfficeApp.Entities.ApprovalRequest", "LeaveRequestId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Approver");
+
+                    b.Navigation("LeaveRequest");
+                });
+
+            modelBuilder.Entity("OutOfOfficeApp.Entities.Employee", b =>
+                {
+                    b.HasOne("OutOfOfficeApp.Entities.Employee", "PeoplePartner")
                         .WithMany()
-                        .HasForeignKey("ProjectsProjectID")
+                        .HasForeignKey("PeoplePartnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("OutOfOfficeApp.Entities.User", "User")
+                        .WithOne("Employee")
+                        .HasForeignKey("OutOfOfficeApp.Entities.Employee", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PeoplePartner");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("OutOfOfficeApp.Entities.EmployeeProject", b =>
+                {
+                    b.HasOne("OutOfOfficeApp.Entities.Employee", "Employee")
+                        .WithMany("EmployeeProjects")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("OutOfOfficeApp.Entities.Project", "Project")
+                        .WithMany("EmployeeProjects")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("OutOfOfficeApp.Entities.LeaveRequest", b =>
+                {
+                    b.HasOne("OutOfOfficeApp.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("OutOfOfficeApp.Entities.Employee", null)
+                        .WithMany("LeaveRequests")
+                        .HasForeignKey("EmployeeId1");
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("OutOfOfficeApp.Entities.Project", b =>
+                {
+                    b.HasOne("OutOfOfficeApp.Entities.Employee", "Employee")
+                        .WithMany("Projects")
+                        .HasForeignKey("EmployeeId");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("OutOfOfficeApp.Entities.User", b =>
@@ -239,6 +329,32 @@ namespace OutOfOfficeApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("OutOfOfficeApp.Entities.Employee", b =>
+                {
+                    b.Navigation("ApprovalRequests");
+
+                    b.Navigation("EmployeeProjects");
+
+                    b.Navigation("LeaveRequests");
+
+                    b.Navigation("Projects");
+                });
+
+            modelBuilder.Entity("OutOfOfficeApp.Entities.LeaveRequest", b =>
+                {
+                    b.Navigation("ApprovalRequest");
+                });
+
+            modelBuilder.Entity("OutOfOfficeApp.Entities.Project", b =>
+                {
+                    b.Navigation("EmployeeProjects");
+                });
+
+            modelBuilder.Entity("OutOfOfficeApp.Entities.User", b =>
+                {
+                    b.Navigation("Employee");
                 });
 #pragma warning restore 612, 618
         }
